@@ -7,11 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.20" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\Client\EcommerceBlazor.Client.csproj" />
+    <ProjectReference Include="..\Shared\EcommerceBlazor.Shared.csproj" />
   </ItemGroup>
+
 
 </Project>

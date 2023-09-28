@@ -15,5 +15,7 @@ namespace EcommerceBlazor.Shared
         public string UrlImagem { get; set; } = string.Empty;
         [Column(TypeName = "decimal(18,2)")]
         public decimal Preco { get; set; }
+        public Categoria? Categoria { get; set; }
+        public int CategoriaId { get; set; }
     }
 }

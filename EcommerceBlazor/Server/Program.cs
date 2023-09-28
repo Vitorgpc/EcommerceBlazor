@@ -2,6 +2,7 @@ global using EcommerceBlazor.Shared;
 global using Microsoft.EntityFrameworkCore;
 global using EcommerceBlazor.Server.Data;
 global using EcommerceBlazor.Server.Services.ProdutoService;
+global using EcommerceBlazor.Server.Services.CategoriaService;
 using Microsoft.AspNetCore.ResponseCompression;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +19,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IProdutoService, ProdutoService>();
+builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 
 var app = builder.Build();
 

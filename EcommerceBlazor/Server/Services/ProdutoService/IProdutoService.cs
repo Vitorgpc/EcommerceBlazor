@@ -4,5 +4,6 @@
     {
         Task<ServiceResponse<List<Produto>>> GetProdutosAsync();
         Task<ServiceResponse<Produto>> GetProdutoAsync(int idProduto);
+        Task<ServiceResponse<List<Produto>>> GetProdutosPorCategoria(string urlCategoria);
     }
 }

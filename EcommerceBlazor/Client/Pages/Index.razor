@@ -1,5 +1,17 @@
 ﻿@page "/"
+@page "/{urlCategoria}"
+@inject IProdutoService produtoService
 
 <PageTitle>Ecommerce</PageTitle>
 
 <ListaProdutos />
+
+@code {
+    [Parameter]
+    public string? UrlCategoria { get; set; } = null;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await produtoService.GetProdutos(UrlCategoria);
+    }
+}

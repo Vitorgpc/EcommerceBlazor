@@ -3,7 +3,7 @@
 
 @if (produto == null)
 {
-    <span>Carregando Produto...</span>
+    <span>@mensagem</span>
 }
 else
 {
@@ -21,12 +21,22 @@ else
 
 @code {
     private Produto? produto = null;
+    private string mensagem = string.Empty;
 
     [Parameter]
     public int Id { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        produto = produtoService.Produtos.Find(x => x.Produto_ID == Id);
+        mensagem = "Carregando Produto...";
+        var resultado = await produtoService.GetProduto(Id);
+        if (!resultado.Success)
+        {
+            mensagem = resultado.Message;
+        }
+        else
+        {
+            produto = resultado.Data;
+        }
     }
 }

@@ -28,7 +28,7 @@
             return response;
         }
 
-        public async Task<ServiceResponse<List<Produto>>> GetProdutoAsync()
+        public async Task<ServiceResponse<List<Produto>>> GetProdutosAsync()
         {
             var response = new ServiceResponse<List<Produto>>
             {

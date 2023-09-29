@@ -13,9 +13,8 @@ namespace EcommerceBlazor.Shared
         public string Nome { get; set; } = string.Empty;
         public string Descricao { get; set; } = string.Empty;
         public string UrlImagem { get; set; } = string.Empty;
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal Preco { get; set; }
         public Categoria? Categoria { get; set; }
         public int CategoriaId { get; set; }
+        public List<ProdutoVariante> Variantes { get; set; } = new List<ProdutoVariante>();
     }
 }

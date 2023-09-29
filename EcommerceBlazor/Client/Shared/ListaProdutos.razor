@@ -21,7 +21,9 @@ else
                         <h4 class="mb-0">@produto.Nome</h4>
                     </a>
                     <p>@produto.Descricao</p>
-                    @* <h5 class="price">R$ @produto.Preco</h5> *@
+                    <h5 class="price">
+                        @GetPriceText(produto)
+                    </h5>
                 </div>
             </li>
         }
@@ -37,5 +39,24 @@ else
     public void Dispose()
     {
         produtoService.OnProdutoChanged -= StateHasChanged;
+    }
+
+    private string GetPriceText(Produto produto)
+    {
+        var variantes = produto.Variantes;
+
+        if (variantes.Count == 0)
+        {
+            return string.Empty;
+        }
+        else if (variantes.Count == 1)
+        {
+            return $"R$ {variantes[0].Preco}";
+        }
+
+        decimal precoMinimo = variantes.Min(v => v.Preco);
+        decimal precoMaximo = variantes.Max(v => v.Preco);
+
+        return $"De R$ {precoMinimo} até {precoMaximo}";
     }
 }

@@ -14,7 +14,30 @@ else
         <div class="media-body">
             <h2 class="mb-0">@produto.Nome</h2>
             <p>@produto.Descricao</p>
-            @* <h4 class="price">R$ @produto.Preco</h4> *@
+            @if (produto.Variantes != null && produto.Variantes.Count > 1)
+            {
+                <div class="mb-3">
+                    <select class="form-select" @bind="idTipoAtual">
+                        @foreach (var variante in produto.Variantes)
+                        {
+                            <option value="@variante.TipoProdutoId">@variante.TipoProduto.Nome</option>
+                        }
+                    </select>
+                </div>
+            }
+            @if(GetSelectVariante() != null)
+            {
+                @if(GetSelectVariante().PrecoOriginal > GetSelectVariante().Preco)
+                {
+                    <h6 class="text-muted original-price">
+                        R$ @GetSelectVariante().PrecoOriginal
+                    </h6>
+                }
+
+                <h4 class="price">
+                    R$ @GetSelectVariante().Preco
+                </h4>
+            }
         </div>
     </div>
 }
@@ -22,6 +45,7 @@ else
 @code {
     private Produto? produto = null;
     private string mensagem = string.Empty;
+    private int idTipoAtual = 1;
 
     [Parameter]
     public int Id { get; set; }
@@ -37,6 +61,16 @@ else
         else
         {
             produto = resultado.Data;
+            if (produto.Variantes.Count > 0)
+            {
+                idTipoAtual = produto.Variantes[0].TipoProdutoId;
+            }
         }
+    }
+
+    private ProdutoVariante GetSelectVariante()
+    {
+        var variante = produto.Variantes.FirstOrDefault(v => v.TipoProdutoId == idTipoAtual);
+        return variante;
     }
 }

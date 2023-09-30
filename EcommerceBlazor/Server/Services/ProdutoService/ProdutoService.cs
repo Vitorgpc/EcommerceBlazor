@@ -53,5 +53,59 @@
 
             return response;
         }
+
+        public async Task<ServiceResponse<List<string>>> GetSugestaoPesquisa(string pesquisa)
+        {
+            var produtos = await GetProdutosPorPesquisa(pesquisa);
+
+            List<string> resultado = new List<string>();
+
+            foreach(var produto in produtos)
+            {
+                if (produto.Nome.Contains(pesquisa, StringComparison.OrdinalIgnoreCase))
+                {
+                    resultado.Add(produto.Nome);
+                }
+
+                if (produto.Descricao != null)
+                {
+                    var pontuacao = produto.Descricao.Where(char.IsPunctuation)
+                        .Distinct().ToArray();
+
+                    var palavras = produto.Descricao.Split()
+                        .Select(s => s.Trim(pontuacao));
+
+                    foreach(var palavra in palavras)
+                    {
+                        if (palavra.Contains(pesquisa, StringComparison.OrdinalIgnoreCase)
+                            && !resultado.Contains(palavra))
+                        {
+                            resultado.Add(palavra);
+                        }
+                    }
+                }
+            }
+
+            return new ServiceResponse<List<string>> { Data = resultado };
+        }
+
+        public async Task<ServiceResponse<List<Produto>>> PesquisaProdutos(string pesquisa)
+        {
+            var resposta = new ServiceResponse<List<Produto>>
+            {
+                Data = await GetProdutosPorPesquisa(pesquisa)
+            };
+
+            return resposta;
+        }
+
+        private async Task<List<Produto>> GetProdutosPorPesquisa(string pesquisa)
+        {
+            return await _context.Produto.Where(x =>
+                                x.Nome.ToLower().Contains(pesquisa.ToLower()) ||
+                                x.Descricao.ToLower().Contains(pesquisa.ToLower()))
+                                .Include(v => v.Variantes)
+                                .ToListAsync();
+        }
     }
 }

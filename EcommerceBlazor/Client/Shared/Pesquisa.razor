@@ -1,0 +1,56 @@
+﻿@inject NavigationManager NavigationManager
+@inject IProdutoService ProdutoService
+
+<div class="input-group">
+    <input @bind-value="pesquisa"
+           @bind-value:event="oninput"
+           type="search"
+           list="produtos"
+           @onkeyup="HandlePesquisa"
+           class="form-control"
+           placeholder="Pesquisa..."
+           @ref="pesquisaInput" />
+
+    <datalist id="produtos">
+        @foreach (var sugestao in sugestoes)
+        {
+            <option>@sugestao</option>
+        }
+    </datalist>
+    <div class="input-group-append">
+        <button class="btn btn-primary" @onclick="PesquisarProdutos">
+            <span class="oi oi-magnifying-glass"></span>
+        </button>
+    </div>
+</div>
+
+@code {
+    private string pesquisa = string.Empty;
+    private List<string> sugestoes = new List<string>();
+    protected ElementReference pesquisaInput;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await pesquisaInput.FocusAsync();
+        }
+    }
+
+    public void PesquisarProdutos()
+    {
+        NavigationManager.NavigateTo($"pesquisa/{pesquisa}");
+    }
+
+    public async Task HandlePesquisa(KeyboardEventArgs args)
+    {
+        if (args.Key == null || args.Key.Equals("Enter"))
+        {
+            PesquisarProdutos();
+        }
+        else if (pesquisa.Length > 1)
+        {
+            sugestoes = await ProdutoService.GetSugestaoProdutos(pesquisa);
+        }
+    }
+}

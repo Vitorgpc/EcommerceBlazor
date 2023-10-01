@@ -15,6 +15,7 @@ namespace EcommerceBlazor.Shared
         public string UrlImagem { get; set; } = string.Empty;
         public Categoria? Categoria { get; set; }
         public int CategoriaId { get; set; }
+        public bool Featured { get; set; } = false;
         public List<ProdutoVariante> Variantes { get; set; } = new List<ProdutoVariante>();
     }
 }

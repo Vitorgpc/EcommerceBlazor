@@ -20,7 +20,7 @@ namespace EcommerceBlazor.Client.Services.ProdutoService
         public async Task GetProdutos(string? urlCategoria = null)
         {
             var resultado = urlCategoria == null ?
-                await _httpClient.GetFromJsonAsync<ServiceResponse<List<Produto>>>("api/produto") :
+                await _httpClient.GetFromJsonAsync<ServiceResponse<List<Produto>>>("api/produto/featured") :
                 await _httpClient.GetFromJsonAsync<ServiceResponse<List<Produto>>>($"api/produto/categoria/{urlCategoria}");
             
             if (resultado != null && resultado.Data != null)

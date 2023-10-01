@@ -5,7 +5,13 @@
 
 <PageTitle>Ecommerce</PageTitle>
 
-<ListaProdutos />
+@if(Pesquisa == null && UrlCategoria == null){
+    <FeaturedProdutos />
+}
+else
+{
+    <ListaProdutos />
+}
 
 @code {
     [Parameter]

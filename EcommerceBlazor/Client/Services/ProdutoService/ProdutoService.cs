@@ -16,6 +16,9 @@ namespace EcommerceBlazor.Client.Services.ProdutoService
 
         public List<Produto> Produtos { get; set; } = new List<Produto>();
         public string Mensagem { get; set; } = "Carregando produtos...";
+        public int PaginaAtual { get; set; } = 1;
+        public int PaginaCount { get; set; } = 0;
+        public string UltimaPesquisa { get; set; } = string.Empty;
 
         public async Task GetProdutos(string? urlCategoria = null)
         {
@@ -25,6 +28,14 @@ namespace EcommerceBlazor.Client.Services.ProdutoService
             
             if (resultado != null && resultado.Data != null)
                 Produtos = resultado.Data;
+
+            PaginaAtual = 1;
+            PaginaCount = 0;
+
+            if (Produtos.Count == 0)
+            {
+                Mensagem = "Nenhum Produto Encontrado";
+            }
 
             OnProdutoChanged.Invoke();
         }
@@ -42,12 +53,18 @@ namespace EcommerceBlazor.Client.Services.ProdutoService
             return resultado.Data;
         }
 
-        public async Task PesquisarProdutos(string pesquisa)
+        public async Task PesquisarProdutos(string pesquisa, int pagina)
         {
-            var resultado = await _httpClient.GetFromJsonAsync<ServiceResponse<List<Produto>>>($"api/produto/pesquisa/{pesquisa}");
+            UltimaPesquisa = pesquisa;
+
+            var resultado = await _httpClient.GetFromJsonAsync<ServiceResponse<PesquisaProdutoResult>>($"api/produto/pesquisa/{pesquisa}/{pagina}");
 
             if (resultado != null && resultado.Data != null)
-                Produtos = resultado.Data;
+            {
+                Produtos = resultado.Data.Produtos;
+                PaginaAtual = resultado.Data.PaginaAtual;
+                PaginaCount = resultado.Data.Paginas;
+            }
 
             if (Produtos.Count == 0)
                 Mensagem = "Nenhum produto encontrado!";

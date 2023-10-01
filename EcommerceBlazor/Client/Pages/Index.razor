@@ -1,5 +1,5 @@
 ﻿@page "/"
-@page "/pesquisa/{pesquisa}"
+@page "/pesquisa/{pesquisa}/{pagina:int}"
 @page "/{urlCategoria}"
 @inject IProdutoService produtoService
 
@@ -20,11 +20,14 @@ else
     [Parameter]
     public string? Pesquisa { get; set; } = null;
 
+    [Parameter]
+    public int Pagina { get; set; } = 1;
+
     protected override async Task OnParametersSetAsync()
     {
         if (Pesquisa != null)
         {
-            await produtoService.PesquisarProdutos(Pesquisa);
+            await produtoService.PesquisarProdutos(Pesquisa, Pagina);
         }
         else
         {

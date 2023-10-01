@@ -102,11 +102,26 @@
             return new ServiceResponse<List<string>> { Data = resultado };
         }
 
-        public async Task<ServiceResponse<List<Produto>>> PesquisaProdutos(string pesquisa)
+        public async Task<ServiceResponse<PesquisaProdutoResult>> PesquisaProdutos(string pesquisa, int pagina)
         {
-            var resposta = new ServiceResponse<List<Produto>>
+            var pageResult = 2f;
+            var pageCount = Math.Ceiling((await GetProdutosPorPesquisa(pesquisa)).Count / pageResult);
+
+            var produtos = await _context.Produto.Where(x =>
+                                x.Nome.ToLower().Contains(pesquisa.ToLower()) ||
+                                x.Descricao.ToLower().Contains(pesquisa.ToLower()))
+                                .Include(v => v.Variantes)
+                                .Skip((pagina - 1) * (int)pageResult)
+                                .Take((int)pageResult)
+                                .ToListAsync();
+
+            var resposta = new ServiceResponse<PesquisaProdutoResult>
             {
-                Data = await GetProdutosPorPesquisa(pesquisa)
+                Data = new PesquisaProdutoResult {
+                    Produtos = produtos,
+                    PaginaAtual = pagina,
+                    Paginas = (int)pageCount
+                }
             };
 
             return resposta;

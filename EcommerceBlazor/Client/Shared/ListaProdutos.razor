@@ -28,6 +28,13 @@ else
             </li>
         }
     </ul>
+    @for (int i = 1; i <= produtoService.PaginaCount; i++)
+    {
+        <a class="btn @(i == produtoService.PaginaAtual ? "btn-info" : "btn-outline-info") page-selection"
+           href="/pesquisa/@produtoService.UltimaPesquisa/@i">
+           @i
+        </a>
+    }
 }
 
 @code {

@@ -1,0 +1,67 @@
+﻿@page "/carrinho"
+@inject ICarrinhoService carrinhoService
+
+<PageTitle>Carrinho</PageTitle>
+
+<h3>Carrinho</h3>
+
+@if (produtosCarrinho == null || produtosCarrinho.Count == 0)
+{
+    <span>@mensagem</span>
+}
+else
+{
+    <div>
+        @foreach (var produto in produtosCarrinho)
+        {
+            <div class="container">
+                <div class="image-wrapper">
+                    <img src="@produto.UrlImagem" class="image" />
+                </div>
+                <div class="name">
+                    <h5><a href="/produto/@produto.ProdutoId">@produto.Nome</a></h5>
+                    <span>@produto.TipoProduto</span><br>
+                    <button class="btn-delete" @onclick="(() => RemoverProduto(produto.ProdutoId, produto.TipoProdutoId))">
+                        Remover
+                    </button>
+                </div>
+                <div class="cart-product-price">
+                    R$ @produto.Preco
+                </div>
+            </div>
+        }
+
+        <div class="cart-product-price">
+            Total (@produtosCarrinho.Count): R$@produtosCarrinho.Sum(p => p.Preco);
+        </div>
+    </div>
+}
+
+@code {
+    List<CarrinhoProdutoResponse> produtosCarrinho = null;
+    string mensagem = "Carregando carrinho...";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregarCarrinho();
+    }
+
+    private async Task RemoverProduto(int produtoId, int tipoProdutoId)
+    {
+        await carrinhoService.RemoverItemCarrinho(produtoId, tipoProdutoId);
+        await CarregarCarrinho();
+    }
+
+    private async Task CarregarCarrinho()
+    {
+        if ((await carrinhoService.GetItemCarrinhos()).Count == 0)
+        {
+            mensagem = "Seu Carrinho está vazio!";
+            produtosCarrinho = new List<CarrinhoProdutoResponse>();
+        }
+        else
+        {
+            produtosCarrinho = await carrinhoService.GetProdutosCarrinho();
+        }
+    }
+}

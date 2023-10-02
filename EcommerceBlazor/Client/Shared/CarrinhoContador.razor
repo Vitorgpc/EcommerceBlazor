@@ -1,0 +1,27 @@
+﻿@inject ICarrinhoService carrinhoService
+@inject ISyncLocalStorageService localStorage
+@implements IDisposable
+
+<a href="carrinho" class="btn btn-info">
+    <i class="oi oi-cart"></i>
+    <span class="badge">@GetCarrinhoItensCount()</span>
+</a>
+
+@code {
+    private int GetCarrinhoItensCount()
+    {
+        var carrinho = localStorage.GetItem<List<ItemCarrinho>>("carrinho");
+
+        return carrinho != null ? carrinho.Count : 0;
+    }
+
+    protected override void OnInitialized()
+    {
+        carrinhoService.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        carrinhoService.OnChange -= StateHasChanged;
+    }
+}

@@ -14,5 +14,6 @@ namespace EcommerceBlazor.Shared
         public string TipoProduto { get; set; } = string.Empty;
         public string UrlImagem { get; set; } = string.Empty;
         public decimal Preco { get; set; }
+        public int Quantidade { get; set; }
     }
 }

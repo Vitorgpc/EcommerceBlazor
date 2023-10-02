@@ -43,7 +43,8 @@
                     UrlImagem = produto.UrlImagem,
                     Preco = variante.Preco,
                     TipoProduto = variante.TipoProduto.Nome,
-                    TipoProdutoId = variante.TipoProdutoId
+                    TipoProdutoId = variante.TipoProdutoId,
+                    Quantidade = item.Quantidade
                 };
 
                 resultado.Data.Add(produtoCarrinho);

@@ -24,7 +24,16 @@ namespace EcommerceBlazor.Client.Services.CarrinhoService
                 carrinho = new List<ItemCarrinho>();
             }
 
-            carrinho.Add(itemCarrinho);
+            var mesmoItem = carrinho.Find(x => x.ProdutoId == itemCarrinho.ProdutoId && x.TipoProdutoId == itemCarrinho.TipoProdutoId);
+
+            if (mesmoItem == null)
+            {
+                carrinho.Add(itemCarrinho);
+            }
+            else
+            {
+                mesmoItem.Quantidade += itemCarrinho.Quantidade;
+            }
 
             await _localStorage.SetItemAsync("carrinho", carrinho);
             OnChange.Invoke();
@@ -68,6 +77,23 @@ namespace EcommerceBlazor.Client.Services.CarrinhoService
                 carrinho.Remove(item);
                 await _localStorage.SetItemAsync("carrinho", carrinho);
                 OnChange.Invoke();
+            }
+        }
+
+        public async Task AtualizarQuantidade(CarrinhoProdutoResponse produto)
+        {
+            var carrinho = await _localStorage.GetItemAsync<List<ItemCarrinho>>("carrinho");
+            if (carrinho == null)
+            {
+                return;
+            }
+
+            var item = carrinho.Find(x => x.ProdutoId == produto.ProdutoId && x.TipoProdutoId == produto.TipoProdutoId);
+
+            if (item != null)
+            {
+                item.Quantidade = produto.Quantidade;
+                await _localStorage.SetItemAsync("carrinho", carrinho);
             }
         }
     }

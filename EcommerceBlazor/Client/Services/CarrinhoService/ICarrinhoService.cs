@@ -7,5 +7,6 @@
         Task<List<ItemCarrinho>> GetItemCarrinhos();
         Task<List<CarrinhoProdutoResponse>> GetProdutosCarrinho();
         Task RemoverItemCarrinho(int produtoId, int tipoProdutoId);
+        Task AtualizarQuantidade(CarrinhoProdutoResponse produto);
     }
 }

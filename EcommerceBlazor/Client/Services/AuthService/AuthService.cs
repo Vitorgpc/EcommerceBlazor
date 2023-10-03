@@ -14,5 +14,11 @@
             var resultado = await _httpClient.PostAsJsonAsync("api/auth/cadastro", request);
             return await resultado.Content.ReadFromJsonAsync<ServiceResponse<int>>();
         }
+
+        public async Task<ServiceResponse<string>> Login(UsuarioLogin request)
+        {
+            var resultado = await _httpClient.PostAsJsonAsync("api/auth/login", request);
+            return await resultado.Content.ReadFromJsonAsync<ServiceResponse<string>>();
+        }
     }
 }

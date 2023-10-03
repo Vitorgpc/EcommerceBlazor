@@ -3,6 +3,7 @@ global using System.Net.Http.Json;
 global using EcommerceBlazor.Client.Services.ProdutoService;
 global using EcommerceBlazor.Client.Services.CategoriaService;
 global using EcommerceBlazor.Client.Services.CarrinhoService;
+global using EcommerceBlazor.Client.Services.AuthService;
 
 using Blazored.LocalStorage;
 using EcommerceBlazor.Client;
@@ -20,5 +21,6 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddScoped<IProdutoService, ProdutoService>();
 builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 builder.Services.AddScoped<ICarrinhoService, CarrinhoService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 await builder.Build().RunAsync();

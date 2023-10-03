@@ -1,0 +1,18 @@
+﻿namespace EcommerceBlazor.Client.Services.AuthService
+{
+    public class AuthService : IAuthService
+    {
+        private readonly HttpClient _httpClient;
+
+        public AuthService(HttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
+
+        public async Task<ServiceResponse<int>> Cadastro(UsuarioCadastro request)
+        {
+            var resultado = await _httpClient.PostAsJsonAsync("api/auth/cadastro", request);
+            return await resultado.Content.ReadFromJsonAsync<ServiceResponse<int>>();
+        }
+    }
+}

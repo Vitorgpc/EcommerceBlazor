@@ -4,6 +4,7 @@ global using EcommerceBlazor.Server.Data;
 global using EcommerceBlazor.Server.Services.ProdutoService;
 global using EcommerceBlazor.Server.Services.CategoriaService;
 global using EcommerceBlazor.Server.Services.CarrinhoService;
+global using EcommerceBlazor.Server.Services.AuthService;
 
 using Microsoft.AspNetCore.ResponseCompression;
 
@@ -23,6 +24,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IProdutoService, ProdutoService>();
 builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 builder.Services.AddScoped<ICarrinhoService, CarrinhoService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 

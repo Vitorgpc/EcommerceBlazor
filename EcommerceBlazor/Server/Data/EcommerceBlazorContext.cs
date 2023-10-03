@@ -9,6 +9,8 @@
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Usuario>().HasKey(x => x.Usuario_ID);
+
             modelBuilder.Entity<TipoProduto>().HasKey(x => x.TipoProduto_ID);
 
             modelBuilder.Entity<TipoProduto>().HasData(
@@ -261,5 +263,6 @@
         public DbSet<Categoria> Categoria { get; set; }
         public DbSet<TipoProduto> TipoProduto { get; set; }
         public DbSet<ProdutoVariante> ProdutoVariante { get; set; }
+        public DbSet<Usuario> Usuario { get; set; }
     }
 }

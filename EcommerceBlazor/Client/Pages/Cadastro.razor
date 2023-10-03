@@ -1,0 +1,50 @@
+﻿@page "/cadastro"
+@inject IAuthService authService
+
+<PageTitle>Cadastro</PageTitle>
+
+<h3>Cadastro de Usuario</h3>
+
+<EditForm Model="usuario" OnValidSubmit="HandleCadastro">
+    <DataAnnotationsValidator />
+
+    <div class="mb-3">
+        <label for="email">E-mail</label>
+        <InputText id="email" @bind-Value="usuario.Email" class="form-control" />
+        <ValidationMessage For="@(() => usuario.Email)" />
+    </div>
+    <div class="mb-3">
+        <label for="senha"></label>
+        <InputText id="senha" @bind-Value="usuario.Senha" class="form-control" type="password" />
+        <ValidationMessage For="@(() => usuario.Senha)" />
+    </div>
+    <div class="mb-3">
+        <label for="confirmaSenha">Confirmar Senha</label>
+        <InputText id="confirmaSenha" @bind-Value="usuario.ConfirmaSenha" class="form-control" type="password" />
+        <ValidationMessage For="@(() => usuario.ConfirmaSenha)" />
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Cadastrar</button>
+    
+    <div class="@msgCssClass">
+        <span>@Mensagem</span>
+    </div>
+</EditForm>
+
+@code {
+    UsuarioCadastro usuario = new UsuarioCadastro();
+    string Mensagem = string.Empty;
+    string msgCssClass = string.Empty;
+
+    async Task HandleCadastro()
+    {
+        var resultado = await authService.Cadastro(usuario);
+
+        Mensagem = resultado.Message;
+
+        if (resultado.Success)
+            msgCssClass = "text-success";
+        else
+            msgCssClass = "text-danger";
+    }
+}

@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace EcommerceBlazor.Server.Controllers
 {
@@ -41,6 +43,20 @@ namespace EcommerceBlazor.Server.Controllers
             }
 
             return Ok(response);
+        }
+
+        [HttpPost("trocar-senha"), Authorize]
+        public async Task<ActionResult<ServiceResponse<bool>>> TrocarSenha([FromBody] string novaSenha)
+        {
+            var usuarioId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var resposta = await _authService.TrocarSenha(int.Parse(usuarioId), novaSenha);
+
+            if (!resposta.Success)
+            {
+                return BadRequest(resposta);
+            }
+
+            return Ok(resposta);
         }
     }
 }

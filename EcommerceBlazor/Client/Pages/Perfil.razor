@@ -1,0 +1,39 @@
+﻿@page "/perfil"
+@inject IAuthService authService
+@attribute [Authorize]
+
+<AuthorizeView>
+    <h3>Olá você está logado com <i>@context.User.Identity.Name</i></h3>
+</AuthorizeView>
+
+<h5>Trocar Senha</h5>
+
+<EditForm Model="usuario" OnValidSubmit="TrocarSenha">
+    <DataAnnotationsValidator />
+
+    <div class="mb-3">
+        <label for="senha">Nova Senha</label>
+        <InputText id="senha" @bind-Value="usuario.Senha" class="form-control" type="password" />
+        <ValidationMessage For="@(() => usuario.Senha)" />
+    </div>
+    <div class="mb-3">
+        <label for="confirmaSenha">Confirmar Nova Senha</label>
+        <InputText id="confirmaSenha" @bind-Value="usuario.ConfirmaSenha" class="form-control" type="password" />
+        <ValidationMessage For="@(() => usuario.ConfirmaSenha)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Aplicar</button>
+</EditForm>
+
+@mensagem
+
+@code {
+    UsuarioTrocarSenha usuario = new UsuarioTrocarSenha();
+    string mensagem = string.Empty;
+
+    private async Task TrocarSenha()
+    {
+        var resultado = await authService.TrocarSenha(usuario);
+        mensagem = resultado.Message;
+    }
+}

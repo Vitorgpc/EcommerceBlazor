@@ -1,7 +1,12 @@
 ﻿<CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
-            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(ShopLayout)" />
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(ShopLayout)">
+                <NotAuthorized>
+                    <h3>Ooops! você não tem permissão para ver está pagina</h3>
+                    <h5>Por favor, realize o <a href="login">Login</a> ou <a href="cadastro">Cadastre-se</a></h5>
+                </NotAuthorized>
+            </AuthorizeRouteView>
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
         </Found>
         <NotFound>

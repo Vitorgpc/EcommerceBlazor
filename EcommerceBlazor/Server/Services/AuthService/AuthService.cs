@@ -117,5 +117,28 @@ namespace EcommerceBlazor.Server.Services.AuthService
 
             return jwt;
         }
+
+        public async Task<ServiceResponse<bool>> TrocarSenha(int usuarioId, string novaSenha)
+        {
+            var usuario = await _context.Usuario.FindAsync(usuarioId);
+
+            if (usuario == null)
+            {
+                return new ServiceResponse<bool>
+                {
+                    Success = false,
+                    Message = "Usuario não encontrado"
+                };
+            }
+
+            CriarSenhaHash(novaSenha, out byte[] senhaHash, out byte[] senhaSalt);
+
+            usuario.SenhaSalt = senhaSalt;
+            usuario.SenhaHash = senhaHash;
+
+            await _context.SaveChangesAsync();
+
+            return new ServiceResponse<bool> { Data = true, Message = "Senha foi alterada com sucesso!" };
+        }
     }
 }

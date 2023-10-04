@@ -20,5 +20,11 @@
             var resultado = await _httpClient.PostAsJsonAsync("api/auth/login", request);
             return await resultado.Content.ReadFromJsonAsync<ServiceResponse<string>>();
         }
+
+        public async Task<ServiceResponse<bool>> TrocarSenha(UsuarioTrocarSenha request)
+        {
+            var resultado = await _httpClient.PostAsJsonAsync("api/auth/trocar-senha", request.Senha);
+            return await resultado.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+        }
     }
 }

@@ -9,6 +9,10 @@
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Pedido>().HasKey(x => x.Pedido_ID);
+
+            modelBuilder.Entity<ItemPedido>().HasKey(x => new { x.PedidoId, x.ProdutoId, x.TipoProdutoId });
+
             modelBuilder.Entity<ItemCarrinho>().HasKey(x => new { x.UsuarioId, x.ProdutoId, x.TipoProdutoId });
 
             modelBuilder.Entity<Usuario>().HasKey(x => x.Usuario_ID);
@@ -267,5 +271,7 @@
         public DbSet<ProdutoVariante> ProdutoVariante { get; set; }
         public DbSet<Usuario> Usuario { get; set; }
         public DbSet<ItemCarrinho> ItemCarrinho { get; set; }
+        public DbSet<ItemPedido> ItemPedido { get; set; }
+        public DbSet<Pedido> Pedido { get; set; }
     }
 }

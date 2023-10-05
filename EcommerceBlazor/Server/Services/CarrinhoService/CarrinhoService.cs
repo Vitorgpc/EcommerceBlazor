@@ -68,7 +68,7 @@ namespace EcommerceBlazor.Server.Services.CarrinhoService
 
             var itens = await _context.ItemCarrinho.Where(x => x.UsuarioId == GetUsuarioId()).ToListAsync();
 
-            return await GetProdutosCarrinho(itens);
+            return await GetProdutosCarrinhoDB();
         }
 
         public async Task<ServiceResponse<int>> GetQuantidadeItens()
@@ -76,6 +76,71 @@ namespace EcommerceBlazor.Server.Services.CarrinhoService
             var count = (await _context.ItemCarrinho.Where(x => x.UsuarioId == GetUsuarioId()).ToListAsync()).Count;
             
             return new ServiceResponse<int> { Data = count };
+        }
+
+        public async Task<ServiceResponse<List<CarrinhoProdutoResponse>>> GetProdutosCarrinhoDB()
+        {
+            return await GetProdutosCarrinho(await _context.ItemCarrinho
+                .Where(x => x.UsuarioId == GetUsuarioId()).ToListAsync());
+        }
+
+        public async Task<ServiceResponse<bool>> AdicionarItemCarrinho(ItemCarrinho itemCarrinho)
+        {
+            itemCarrinho.UsuarioId = GetUsuarioId();
+
+            var mesmoItem = await _context.ItemCarrinho.FirstOrDefaultAsync(x => 
+                x.ProdutoId == itemCarrinho.ProdutoId && 
+                x.TipoProdutoId == itemCarrinho.TipoProdutoId &&
+                x.UsuarioId == itemCarrinho.UsuarioId);
+
+            if (mesmoItem == null)
+            {
+                _context.ItemCarrinho.Add(itemCarrinho);
+            }
+            else
+            {
+                mesmoItem.Quantidade += itemCarrinho.Quantidade;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return new ServiceResponse<bool> { Data = true };
+        }
+
+        public async Task<ServiceResponse<bool>> AtualizarQuantidade(ItemCarrinho itemCarrinho)
+        {
+            var dbItemCarrinho = await _context.ItemCarrinho.FirstOrDefaultAsync(x =>
+                x.ProdutoId == itemCarrinho.ProdutoId &&
+                x.TipoProdutoId == itemCarrinho.TipoProdutoId &&
+                x.UsuarioId == GetUsuarioId());
+
+            if (dbItemCarrinho == null)
+            {
+                return new ServiceResponse<bool> { Data = false, Success = false, Message = "Item não existe!" };
+            }
+
+            dbItemCarrinho.Quantidade = itemCarrinho.Quantidade;
+            await _context.SaveChangesAsync();
+
+            return new ServiceResponse<bool> { Data = true };
+        }
+
+        public async Task<ServiceResponse<bool>> RemoverItemCarrinho(int produtoId, int tipoProdutoId)
+        {
+            var dbItemCarrinho = await _context.ItemCarrinho.FirstOrDefaultAsync(x =>
+                x.ProdutoId == produtoId &&
+                x.TipoProdutoId == tipoProdutoId &&
+                x.UsuarioId == GetUsuarioId());
+
+            if (dbItemCarrinho == null)
+            {
+                return new ServiceResponse<bool> { Data = false, Success = false, Message = "Item não existe!" };
+            }
+
+            _context.ItemCarrinho.Remove(dbItemCarrinho);
+            await _context.SaveChangesAsync();
+
+            return new ServiceResponse<bool> { Data = true };
         }
     }
 }

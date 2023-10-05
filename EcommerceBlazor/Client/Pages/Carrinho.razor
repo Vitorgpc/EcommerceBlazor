@@ -38,7 +38,7 @@ else
         }
 
         <div class="cart-product-price">
-            Total (@produtosCarrinho.Count): R$@produtosCarrinho.Sum(p => p.Preco * p.Quantidade);
+            Total (@produtosCarrinho.Count): R$@produtosCarrinho.Sum(p => p.Preco * p.Quantidade)
         </div>
     </div>
 }
@@ -60,14 +60,12 @@ else
 
     private async Task CarregarCarrinho()
     {
-        if ((await carrinhoService.GetItemCarrinhos()).Count == 0)
+        await carrinhoService.GetQuantidadeItens();
+        produtosCarrinho = await carrinhoService.GetProdutosCarrinho();
+
+        if (produtosCarrinho == null || produtosCarrinho.Count == 0)
         {
             mensagem = "Seu Carrinho está vazio!";
-            produtosCarrinho = new List<CarrinhoProdutoResponse>();
-        }
-        else
-        {
-            produtosCarrinho = await carrinhoService.GetProdutosCarrinho();
         }
     }
 

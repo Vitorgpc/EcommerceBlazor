@@ -25,84 +25,108 @@ namespace EcommerceBlazor.Client.Services.CarrinhoService
 
         public async Task AddToCart(ItemCarrinho itemCarrinho)
         {
-            var carrinho = await _localStorage.GetItemAsync<List<ItemCarrinho>>("carrinho");
-
-            if (carrinho == null)
+            if (await IsUserAuthenticated())
             {
-                carrinho = new List<ItemCarrinho>();
-            }
-
-            var mesmoItem = carrinho.Find(x => x.ProdutoId == itemCarrinho.ProdutoId && x.TipoProdutoId == itemCarrinho.TipoProdutoId);
-
-            if (mesmoItem == null)
-            {
-                carrinho.Add(itemCarrinho);
+                await _httpClient.PostAsJsonAsync("api/carrinho/adicionar", itemCarrinho);
             }
             else
             {
-                mesmoItem.Quantidade += itemCarrinho.Quantidade;
+                var carrinho = await _localStorage.GetItemAsync<List<ItemCarrinho>>("carrinho");
+
+                if (carrinho == null)
+                {
+                    carrinho = new List<ItemCarrinho>();
+                }
+
+                var mesmoItem = carrinho.Find(x => x.ProdutoId == itemCarrinho.ProdutoId && x.TipoProdutoId == itemCarrinho.TipoProdutoId);
+
+                if (mesmoItem == null)
+                {
+                    carrinho.Add(itemCarrinho);
+                }
+                else
+                {
+                    mesmoItem.Quantidade += itemCarrinho.Quantidade;
+                }
+
+                await _localStorage.SetItemAsync("carrinho", carrinho);
             }
-
-            await _localStorage.SetItemAsync("carrinho", carrinho);
+            
             await GetQuantidadeItens();
-        }
-
-        public async Task<List<ItemCarrinho>> GetItemCarrinhos()
-        {
-            await GetQuantidadeItens();
-            var carrinho = await _localStorage.GetItemAsync<List<ItemCarrinho>>("carrinho");
-
-            if (carrinho == null)
-            {
-                carrinho = new List<ItemCarrinho>();
-            }
-
-            return carrinho;
         }
 
         public async Task<List<CarrinhoProdutoResponse>> GetProdutosCarrinho()
         {
-            var itensCarrinho = await _localStorage.GetItemAsync<List<ItemCarrinho>>("carrinho");
+            if (await IsUserAuthenticated())
+            {
+                var resposta = await _httpClient.GetFromJsonAsync<ServiceResponse<List<CarrinhoProdutoResponse>>>("api/carrinho");
+                return resposta.Data;
+            }
+            else
+            {
+                var itensCarrinho = await _localStorage.GetItemAsync<List<ItemCarrinho>>("carrinho");
+                if (itensCarrinho == null)
+                    return new List<CarrinhoProdutoResponse>();
 
-            var resposta = await _httpClient.PostAsJsonAsync("api/carrinho/produtos", itensCarrinho);
+                var resposta = await _httpClient.PostAsJsonAsync("api/carrinho/produtos", itensCarrinho);
+                var produtosCarrinho = await resposta.Content.ReadFromJsonAsync<ServiceResponse<List<CarrinhoProdutoResponse>>>();
 
-            var produtosCarrinho = await resposta.Content.ReadFromJsonAsync<ServiceResponse<List<CarrinhoProdutoResponse>>>();
-
-            return produtosCarrinho.Data;
+                return produtosCarrinho.Data;
+            }
         }
 
         public async Task RemoverItemCarrinho(int produtoId, int tipoProdutoId)
         {
-            var carrinho = await _localStorage.GetItemAsync<List<ItemCarrinho>>("carrinho");
-            if (carrinho == null)
+            if (await IsUserAuthenticated())
             {
-                return;
+                await _httpClient.DeleteAsync($"api/carrinho/{produtoId}/{tipoProdutoId}");
             }
-
-            var item = carrinho.Find(x => x.ProdutoId == produtoId && x.TipoProdutoId == tipoProdutoId);
-
-            if (item != null)
+            else
             {
-                carrinho.Remove(item);
-                await _localStorage.SetItemAsync("carrinho", carrinho);
-                await GetQuantidadeItens();
+                var carrinho = await _localStorage.GetItemAsync<List<ItemCarrinho>>("carrinho");
+                if (carrinho == null)
+                {
+                    return;
+                }
+
+                var item = carrinho.Find(x => x.ProdutoId == produtoId && x.TipoProdutoId == tipoProdutoId);
+
+                if (item != null)
+                {
+                    carrinho.Remove(item);
+                    await _localStorage.SetItemAsync("carrinho", carrinho);
+                }
             }
         }
 
         public async Task AtualizarQuantidade(CarrinhoProdutoResponse produto)
         {
-            var carrinho = await _localStorage.GetItemAsync<List<ItemCarrinho>>("carrinho");
-            if (carrinho == null)
+            if (await IsUserAuthenticated())
             {
-                return;
+                var request = new ItemCarrinho 
+                { 
+                    ProdutoId = produto.ProdutoId,
+                    TipoProdutoId = produto.TipoProdutoId,
+                    Quantidade = produto.Quantidade
+                };
+
+                await _httpClient.PutAsJsonAsync("api/carrinho/atualizar-quantidade", request);
             }
-
-            var item = carrinho.Find(x => x.ProdutoId == produto.ProdutoId && x.TipoProdutoId == produto.TipoProdutoId);
-
-            if (item != null)
+            else
             {
-                item.Quantidade = produto.Quantidade;
-                await _localStorage.SetItemAsync("carrinho", carrinho);
+                var carrinho = await _localStorage.GetItemAsync<List<ItemCarrinho>>("carrinho");
+                if (carrinho == null)
+                {
+                    return;
+                }
+
+                var item = carrinho.Find(x => x.ProdutoId == produto.ProdutoId && x.TipoProdutoId == produto.TipoProdutoId);
+
+                if (item != null)
+                {
+                    item.Quantidade = produto.Quantidade;
+                    await _localStorage.SetItemAsync("carrinho", carrinho);
+                }
             }
         }
 

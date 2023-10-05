@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace EcommerceBlazor.Server.Controllers
 {
@@ -10,7 +8,7 @@ namespace EcommerceBlazor.Server.Controllers
     {
         private readonly ICarrinhoService _carrinhoService;
 
-        public CarrinhoController(ICarrinhoService carrinhoService) 
+        public CarrinhoController(ICarrinhoService carrinhoService)
         {
             _carrinhoService = carrinhoService;
         }
@@ -33,6 +31,34 @@ namespace EcommerceBlazor.Server.Controllers
         public async Task<ActionResult<ServiceResponse<int>>> GetQuantidadeItens()
         {
             return await _carrinhoService.GetQuantidadeItens();
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<ServiceResponse<List<CarrinhoProdutoResponse>>>> GetProdutosCarrinhoDB()
+        {
+            var resultado = await _carrinhoService.GetProdutosCarrinhoDB();
+            return Ok(resultado);
+        }
+
+        [HttpPost("adicionar")]
+        public async Task<ActionResult<ServiceResponse<bool>>> AdicionarItemCarrinho(ItemCarrinho itemCarrinho)
+        {
+            var resultado = await _carrinhoService.AdicionarItemCarrinho(itemCarrinho);
+            return Ok(resultado);
+        }
+
+        [HttpPut("atualizar-quantidade")]
+        public async Task<ActionResult<ServiceResponse<bool>>> AtualizarQauntidade(ItemCarrinho itemCarrinho)
+        {
+            var resultado = await _carrinhoService.AtualizarQuantidade(itemCarrinho);
+            return Ok(resultado);
+        }
+
+        [HttpDelete("{produtoId}/{tipoProdutoId}")]
+        public async Task<ActionResult<ServiceResponse<bool>>> RemoverItemCarrinho(int produtoId, int tipoProdutoId)
+        {
+            var resultado = await _carrinhoService.RemoverItemCarrinho(produtoId, tipoProdutoId);
+            return Ok(resultado);
         }
     }
 }

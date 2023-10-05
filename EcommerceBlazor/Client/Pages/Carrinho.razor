@@ -1,5 +1,6 @@
 ﻿@page "/carrinho"
 @inject ICarrinhoService carrinhoService
+@inject IPedidoService pedidoService
 
 <PageTitle>Carrinho</PageTitle>
 
@@ -41,6 +42,8 @@ else
             Total (@produtosCarrinho.Count): R$@produtosCarrinho.Sum(p => p.Preco * p.Quantidade)
         </div>
     </div>
+
+    <button @onclick="CriarPedido" class="btn btn-success float-end mt-1">Finalizar Pedido</button>
 }
 
 @code {
@@ -78,4 +81,10 @@ else
 
         await carrinhoService.AtualizarQuantidade(produto);
     }
+
+    private async Task CriarPedido()
+    {
+        await pedidoService.CriarPedido();
+    }
+
 }

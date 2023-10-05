@@ -1,6 +1,7 @@
 ﻿@page "/login"
 @using Microsoft.AspNetCore.WebUtilities;
 @inject IAuthService authService
+@inject ICarrinhoService carrinhoService
 @inject ILocalStorageService localStorage
 @inject NavigationManager navigationManager
 @inject AuthenticationStateProvider authenticationStateProvider
@@ -55,6 +56,8 @@
             MensagemErro = string.Empty;
             await localStorage.SetItemAsync("authToken", resultado.Data);
             await authenticationStateProvider.GetAuthenticationStateAsync();
+            await carrinhoService.GravarItensCarrinho(true);
+            await carrinhoService.GetQuantidadeItens();
             navigationManager.NavigateTo(returnUrl);
         }
         else

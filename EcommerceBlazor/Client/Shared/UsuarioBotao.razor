@@ -1,6 +1,7 @@
 ﻿@inject ILocalStorageService localStorage
 @inject AuthenticationStateProvider authenticationStateProvider
 @inject NavigationManager navigationManager
+@inject ICarrinhoService carrinhoservice
 
 <div class="dropdown">
     <button 
@@ -43,6 +44,7 @@
     private async Task Logout()
     {
         await localStorage.RemoveItemAsync("authToken");
+        await carrinhoservice.GetQuantidadeItens();
         await authenticationStateProvider.GetAuthenticationStateAsync();
         navigationManager.NavigateTo("");
     }

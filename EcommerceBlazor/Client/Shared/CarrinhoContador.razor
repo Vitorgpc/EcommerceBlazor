@@ -10,9 +10,9 @@
 @code {
     private int GetCarrinhoItensCount()
     {
-        var carrinho = localStorage.GetItem<List<ItemCarrinho>>("carrinho");
+        var quantidade = localStorage.GetItem<int>("carrinho");
 
-        return carrinho != null ? carrinho.Count : 0;
+        return quantidade;
     }
 
     protected override void OnInitialized()

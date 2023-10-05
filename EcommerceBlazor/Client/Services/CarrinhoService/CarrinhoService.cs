@@ -1,4 +1,5 @@
 ﻿using Blazored.LocalStorage;
+using EcommerceBlazor.Client.Pages;
 
 namespace EcommerceBlazor.Client.Services.CarrinhoService
 {
@@ -6,14 +7,21 @@ namespace EcommerceBlazor.Client.Services.CarrinhoService
     {
         private readonly ILocalStorageService _localStorage;
         private readonly HttpClient _httpClient;
+        private readonly AuthenticationStateProvider _stateProvider;
 
-        public CarrinhoService(ILocalStorageService localStorage, HttpClient httpClient)
+        public CarrinhoService(ILocalStorageService localStorage, HttpClient httpClient, AuthenticationStateProvider stateProvider)
         {
             _localStorage = localStorage;
             _httpClient = httpClient;
+            _stateProvider = stateProvider;
         }
 
         public event Action OnChange;
+
+        private async Task<bool> IsUserAuthenticated()
+        {
+            return (await _stateProvider.GetAuthenticationStateAsync()).User.Identity.IsAuthenticated;
+        }
 
         public async Task AddToCart(ItemCarrinho itemCarrinho)
         {
@@ -36,11 +44,12 @@ namespace EcommerceBlazor.Client.Services.CarrinhoService
             }
 
             await _localStorage.SetItemAsync("carrinho", carrinho);
-            OnChange.Invoke();
+            await GetQuantidadeItens();
         }
 
         public async Task<List<ItemCarrinho>> GetItemCarrinhos()
         {
+            await GetQuantidadeItens();
             var carrinho = await _localStorage.GetItemAsync<List<ItemCarrinho>>("carrinho");
 
             if (carrinho == null)
@@ -76,7 +85,7 @@ namespace EcommerceBlazor.Client.Services.CarrinhoService
             {
                 carrinho.Remove(item);
                 await _localStorage.SetItemAsync("carrinho", carrinho);
-                OnChange.Invoke();
+                await GetQuantidadeItens();
             }
         }
 
@@ -95,6 +104,40 @@ namespace EcommerceBlazor.Client.Services.CarrinhoService
                 item.Quantidade = produto.Quantidade;
                 await _localStorage.SetItemAsync("carrinho", carrinho);
             }
+        }
+
+        public async Task GravarItensCarrinho(bool carrinhoLocalVazio = false)
+        {
+            var carrinhoLocal = await _localStorage.GetItemAsync<List<ItemCarrinho>>("carrinho");
+            if (carrinhoLocal == null)
+            {
+                return;
+            }
+
+            await _httpClient.PostAsJsonAsync("api/carrinho", carrinhoLocal);
+
+            if (carrinhoLocalVazio)
+            {
+                await _localStorage.RemoveItemAsync("carrinho");
+            }
+        }
+
+        public async Task GetQuantidadeItens()
+        {
+            if (await IsUserAuthenticated())
+            {
+                var resultado = await _httpClient.GetFromJsonAsync<ServiceResponse<int>>("api/carrinho/quantidade");
+                var quantidade = resultado.Data;
+
+                await _localStorage.SetItemAsync<int>("quantidadeCarrinho", quantidade);
+            }
+            else
+            {
+                var carrinho = await _localStorage.GetItemAsync<List<ItemCarrinho>>("carrinho");
+                await _localStorage.SetItemAsync<int>("quantidadeCarrinho", carrinho != null ? carrinho.Count : 0);
+            }
+
+            OnChange.Invoke();
         }
     }
 }

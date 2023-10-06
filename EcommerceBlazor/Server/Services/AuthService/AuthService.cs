@@ -9,12 +9,16 @@ namespace EcommerceBlazor.Server.Services.AuthService
     {
         private readonly EcommerceBlazorContext _context;
         private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor _httpContext;
 
-        public AuthService(EcommerceBlazorContext context, IConfiguration configuration)
+        public AuthService(EcommerceBlazorContext context, IConfiguration configuration, IHttpContextAccessor httpContext)
         {
             _context = context;
             _configuration = configuration;
+            _httpContext = httpContext;
         }
+
+        public int GetUsuarioId() => int.Parse(_httpContext.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
 
         public async Task<ServiceResponse<int>> Cadastro(Usuario usuario, string senha)
         {

@@ -3,5 +3,6 @@
     public interface IPedidoService
     {
         Task CriarPedido();
+        Task<List<PedidoOverviewResponse>> GetPedidos();
     }
 }

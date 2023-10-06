@@ -20,5 +20,12 @@ namespace EcommerceBlazor.Server.Controllers
             var resultado = await _pedidoService.CriarPedido();
             return Ok(resultado);
         }
+
+        [HttpGet]
+        public async Task<ActionResult<ServiceResponse<List<PedidoOverviewResponse>>>> GetPedidos()
+        {
+            var resultado = await _pedidoService.GetPedidos();
+            return Ok(resultado);
+        }
     }
 }

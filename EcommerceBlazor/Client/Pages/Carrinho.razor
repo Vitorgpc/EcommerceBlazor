@@ -10,6 +10,10 @@
 {
     <span>@mensagem</span>
 }
+else if (pedidoRealizado)
+{
+    <span>Obrigado por realizar o Pedido! confira os detalhes na pagina de <a href="pedidos">Pedidos</a></span>
+}
 else
 {
     <div>
@@ -49,9 +53,11 @@ else
 @code {
     List<CarrinhoProdutoResponse> produtosCarrinho = null;
     string mensagem = "Carregando carrinho...";
+    bool pedidoRealizado = false;
 
     protected override async Task OnInitializedAsync()
     {
+        pedidoRealizado = false;
         await CarregarCarrinho();
     }
 
@@ -85,6 +91,8 @@ else
     private async Task CriarPedido()
     {
         await pedidoService.CriarPedido();
+        await carrinhoService.GetQuantidadeItens();
+        pedidoRealizado = true;
     }
 
 }

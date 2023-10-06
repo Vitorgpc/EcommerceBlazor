@@ -31,5 +31,12 @@ namespace EcommerceBlazor.Client.Services.PedidoService
                 _navigationManager.NavigateTo("login");
             }
         }
+
+        public async Task<List<PedidoOverviewResponse>> GetPedidos()
+        {
+            var resultado = await _httpClient.GetFromJsonAsync<ServiceResponse<List<PedidoOverviewResponse>>>("api/pedido");
+
+            return resultado.Data;
+        }
     }
 }

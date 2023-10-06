@@ -6,5 +6,6 @@
         Task<bool> UsuarioExiste(string email);
         Task<ServiceResponse<string>> Login(string email, string senha);
         Task<ServiceResponse<bool>> TrocarSenha(int usuarioId, string novaSenha);
+        int GetUsuarioId();
     }
 }

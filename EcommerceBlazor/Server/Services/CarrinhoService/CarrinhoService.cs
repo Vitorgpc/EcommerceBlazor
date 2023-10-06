@@ -5,16 +5,14 @@ namespace EcommerceBlazor.Server.Services.CarrinhoService
     public class CarrinhoService : ICarrinhoService
     {
         private readonly EcommerceBlazorContext _context;
-        private readonly IHttpContextAccessor _httpContext;
+        private readonly IAuthService _authService;
 
-        public CarrinhoService(EcommerceBlazorContext context, IHttpContextAccessor httpContext) 
+        public CarrinhoService(EcommerceBlazorContext context, IAuthService authService)
         { 
             _context = context;
-            _httpContext = httpContext;
+            _authService = authService;
         }
 
-        private int GetUsuarioId() => int.Parse(_httpContext.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
-        
         public async Task<ServiceResponse<List<CarrinhoProdutoResponse>>> GetProdutosCarrinho(List<ItemCarrinho> itensCarrinho)
         {
             var resultado = new ServiceResponse<List<CarrinhoProdutoResponse>>
@@ -61,19 +59,19 @@ namespace EcommerceBlazor.Server.Services.CarrinhoService
 
         public async Task<ServiceResponse<List<CarrinhoProdutoResponse>>> GravarItensCarrinho(List<ItemCarrinho> itensCarrinho)
         {
-            itensCarrinho.ForEach(c => c.UsuarioId = GetUsuarioId());
+            itensCarrinho.ForEach(c => c.UsuarioId = _authService.GetUsuarioId());
             _context.ItemCarrinho.AddRange(itensCarrinho);
 
             await _context.SaveChangesAsync();
 
-            var itens = await _context.ItemCarrinho.Where(x => x.UsuarioId == GetUsuarioId()).ToListAsync();
+            var itens = await _context.ItemCarrinho.Where(x => x.UsuarioId == _authService.GetUsuarioId()).ToListAsync();
 
             return await GetProdutosCarrinhoDB();
         }
 
         public async Task<ServiceResponse<int>> GetQuantidadeItens()
         {
-            var count = (await _context.ItemCarrinho.Where(x => x.UsuarioId == GetUsuarioId()).ToListAsync()).Count;
+            var count = (await _context.ItemCarrinho.Where(x => x.UsuarioId == _authService.GetUsuarioId()).ToListAsync()).Count;
             
             return new ServiceResponse<int> { Data = count };
         }
@@ -81,12 +79,12 @@ namespace EcommerceBlazor.Server.Services.CarrinhoService
         public async Task<ServiceResponse<List<CarrinhoProdutoResponse>>> GetProdutosCarrinhoDB()
         {
             return await GetProdutosCarrinho(await _context.ItemCarrinho
-                .Where(x => x.UsuarioId == GetUsuarioId()).ToListAsync());
+                .Where(x => x.UsuarioId == _authService.GetUsuarioId()).ToListAsync());
         }
 
         public async Task<ServiceResponse<bool>> AdicionarItemCarrinho(ItemCarrinho itemCarrinho)
         {
-            itemCarrinho.UsuarioId = GetUsuarioId();
+            itemCarrinho.UsuarioId = _authService.GetUsuarioId();
 
             var mesmoItem = await _context.ItemCarrinho.FirstOrDefaultAsync(x => 
                 x.ProdutoId == itemCarrinho.ProdutoId && 
@@ -112,7 +110,7 @@ namespace EcommerceBlazor.Server.Services.CarrinhoService
             var dbItemCarrinho = await _context.ItemCarrinho.FirstOrDefaultAsync(x =>
                 x.ProdutoId == itemCarrinho.ProdutoId &&
                 x.TipoProdutoId == itemCarrinho.TipoProdutoId &&
-                x.UsuarioId == GetUsuarioId());
+                x.UsuarioId == _authService.GetUsuarioId());
 
             if (dbItemCarrinho == null)
             {
@@ -130,7 +128,7 @@ namespace EcommerceBlazor.Server.Services.CarrinhoService
             var dbItemCarrinho = await _context.ItemCarrinho.FirstOrDefaultAsync(x =>
                 x.ProdutoId == produtoId &&
                 x.TipoProdutoId == tipoProdutoId &&
-                x.UsuarioId == GetUsuarioId());
+                x.UsuarioId == _authService.GetUsuarioId());
 
             if (dbItemCarrinho == null)
             {

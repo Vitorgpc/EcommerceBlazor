@@ -7,25 +7,20 @@ namespace EcommerceBlazor.Client.Services.CarrinhoService
     {
         private readonly ILocalStorageService _localStorage;
         private readonly HttpClient _httpClient;
-        private readonly AuthenticationStateProvider _stateProvider;
+        private readonly IAuthService _authService;
 
-        public CarrinhoService(ILocalStorageService localStorage, HttpClient httpClient, AuthenticationStateProvider stateProvider)
+        public CarrinhoService(ILocalStorageService localStorage, HttpClient httpClient, IAuthService authService)
         {
             _localStorage = localStorage;
             _httpClient = httpClient;
-            _stateProvider = stateProvider;
+            _authService = authService;
         }
 
         public event Action OnChange;
 
-        private async Task<bool> IsUserAuthenticated()
-        {
-            return (await _stateProvider.GetAuthenticationStateAsync()).User.Identity.IsAuthenticated;
-        }
-
         public async Task AddToCart(ItemCarrinho itemCarrinho)
         {
-            if (await IsUserAuthenticated())
+            if (await _authService.IsUserAuthenticated())
             {
                 await _httpClient.PostAsJsonAsync("api/carrinho/adicionar", itemCarrinho);
             }
@@ -57,7 +52,7 @@ namespace EcommerceBlazor.Client.Services.CarrinhoService
 
         public async Task<List<CarrinhoProdutoResponse>> GetProdutosCarrinho()
         {
-            if (await IsUserAuthenticated())
+            if (await _authService.IsUserAuthenticated())
             {
                 var resposta = await _httpClient.GetFromJsonAsync<ServiceResponse<List<CarrinhoProdutoResponse>>>("api/carrinho");
                 return resposta.Data;
@@ -77,7 +72,7 @@ namespace EcommerceBlazor.Client.Services.CarrinhoService
 
         public async Task RemoverItemCarrinho(int produtoId, int tipoProdutoId)
         {
-            if (await IsUserAuthenticated())
+            if (await _authService.IsUserAuthenticated())
             {
                 await _httpClient.DeleteAsync($"api/carrinho/{produtoId}/{tipoProdutoId}");
             }
@@ -101,7 +96,7 @@ namespace EcommerceBlazor.Client.Services.CarrinhoService
 
         public async Task AtualizarQuantidade(CarrinhoProdutoResponse produto)
         {
-            if (await IsUserAuthenticated())
+            if (await _authService.IsUserAuthenticated())
             {
                 var request = new ItemCarrinho 
                 { 
@@ -148,7 +143,7 @@ namespace EcommerceBlazor.Client.Services.CarrinhoService
 
         public async Task GetQuantidadeItens()
         {
-            if (await IsUserAuthenticated())
+            if (await _authService.IsUserAuthenticated())
             {
                 var resultado = await _httpClient.GetFromJsonAsync<ServiceResponse<int>>("api/carrinho/quantidade");
                 var quantidade = resultado.Data;

@@ -1,0 +1,45 @@
+﻿@page "/pedidos/{pedidoId:int}"
+@inject IPedidoService pedidoService
+
+
+@if (pedido == null)
+{
+    <span>Carregando Pedido...</span>
+}
+else
+{
+    <h3>Data do Pedido @pedido.DataPedido</h3>
+    <div>
+        @foreach (var item in pedido.Itens)
+        {
+            <div class="container">
+                <div class="image-wrapper">
+                    <img src="@item.UrlImagemProduto" class="image" />
+                </div>
+                <div class="name">
+                    <h5><a href="/produto/@item.ProdutoId">@item.NomeProduto</a></h5>
+                    <span>@item.TipoProduto</span><br>
+                    <span>Quantidade: @item.Quantidade</span>
+                </div>
+                <div class="product-price">
+                    R$ @item.PrecoTotal
+                </div>
+            </div>
+        }
+        <div class="product-price">
+            Total: R$ @pedido.PrecoTotal
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int PedidoId { get; set; }
+
+    PedidoDetalhesResponse pedido = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        pedido = await pedidoService.GetDetalhesPedido(PedidoId);
+    }
+}

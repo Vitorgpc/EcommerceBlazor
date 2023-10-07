@@ -50,6 +50,48 @@ namespace EcommerceBlazor.Server.Services.PedidoService
             return new ServiceResponse<bool> { Data = true };
         }
 
+        public async Task<ServiceResponse<PedidoDetalhesResponse>> GetDetalhesPedido(int pedidoId)
+        {
+            var response = new ServiceResponse<PedidoDetalhesResponse>();
+
+            var pedido = await _context.Pedido
+                .Include(o => o.Itens)
+                .ThenInclude(oi => oi.Produto)
+                .Include(o => o.Itens)
+                .ThenInclude(oi => oi.TipoProduto)
+                .Where(o => o.UsuarioId == _authService.GetUsuarioId() && o.Pedido_ID == pedidoId)
+                .OrderByDescending(o => o.DataPedido)
+                .FirstOrDefaultAsync();
+
+            if (pedido == null)
+            {
+                response.Success = false;
+                response.Message = "Pedido não encontrado!";
+                return response;
+            }
+
+            var pedidoDetalhes = new PedidoDetalhesResponse
+            {
+                DataPedido = pedido.DataPedido,
+                PrecoTotal = pedido.PrecoTotal,
+                Itens = new List<ItemPedidoDetalhesReponse>()
+            };
+
+            pedido.Itens.ForEach(item => pedidoDetalhes.Itens.Add(new ItemPedidoDetalhesReponse
+            {
+                ProdutoId = item.ProdutoId,
+                UrlImagemProduto = item.Produto.UrlImagem,
+                TipoProduto = item.TipoProduto.Nome,
+                Quantidade = item.Quantidade,
+                NomeProduto = item.Produto.Nome,
+                PrecoTotal = item.PrecoTotal
+            }));
+
+            response.Data = pedidoDetalhes;
+
+            return response;
+        }
+
         public async Task<ServiceResponse<List<PedidoOverviewResponse>>> GetPedidos()
         {
             var response = new ServiceResponse<List<PedidoOverviewResponse>>();

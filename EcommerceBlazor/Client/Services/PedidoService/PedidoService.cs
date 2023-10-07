@@ -5,24 +5,19 @@ namespace EcommerceBlazor.Client.Services.PedidoService
     public class PedidoService : IPedidoService
     {
         private readonly HttpClient _httpClient;
-        private readonly AuthenticationStateProvider _stateProvider;
+        private readonly IAuthService _authService;
         private readonly NavigationManager _navigationManager;
 
-        public PedidoService(HttpClient httpClient, AuthenticationStateProvider stateProvider, NavigationManager navigationManager)
+        public PedidoService(HttpClient httpClient, IAuthService authService, NavigationManager navigationManager)
         {
             _httpClient = httpClient;
-            _stateProvider = stateProvider;
+            _authService = authService;
             _navigationManager = navigationManager;
-        }
-
-        private async Task<bool> IsUserAuthenticated()
-        {
-            return (await _stateProvider.GetAuthenticationStateAsync()).User.Identity.IsAuthenticated;
         }
 
         public async Task CriarPedido()
         {
-            if (await IsUserAuthenticated())
+            if (await _authService.IsUserAuthenticated())
             {
                 await _httpClient.PostAsync("api/pedido", null);
             }
@@ -36,6 +31,12 @@ namespace EcommerceBlazor.Client.Services.PedidoService
         {
             var resultado = await _httpClient.GetFromJsonAsync<ServiceResponse<List<PedidoOverviewResponse>>>("api/pedido");
 
+            return resultado.Data;
+        }
+
+        public async Task<PedidoDetalhesResponse> GetDetalhesPedido(int pedidoId)
+        {
+            var resultado = await _httpClient.GetFromJsonAsync<ServiceResponse<PedidoDetalhesResponse>>($"api/pedido/{pedidoId}");
             return resultado.Data;
         }
     }

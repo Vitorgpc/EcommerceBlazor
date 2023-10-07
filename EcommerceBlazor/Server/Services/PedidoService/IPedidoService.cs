@@ -4,5 +4,6 @@
     {
         Task<ServiceResponse<bool>> CriarPedido();
         Task<ServiceResponse<List<PedidoOverviewResponse>>> GetPedidos();
+        Task<ServiceResponse<PedidoDetalhesResponse>> GetDetalhesPedido(int pedidoId);
     }
 }

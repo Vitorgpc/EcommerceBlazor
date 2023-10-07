@@ -3,16 +3,23 @@
     public class AuthService : IAuthService
     {
         private readonly HttpClient _httpClient;
+        private readonly AuthenticationStateProvider _stateProvider;
 
-        public AuthService(HttpClient httpClient)
+        public AuthService(HttpClient httpClient, AuthenticationStateProvider stateProvider)
         {
             _httpClient = httpClient;
+            _stateProvider = stateProvider;
         }
 
         public async Task<ServiceResponse<int>> Cadastro(UsuarioCadastro request)
         {
             var resultado = await _httpClient.PostAsJsonAsync("api/auth/cadastro", request);
             return await resultado.Content.ReadFromJsonAsync<ServiceResponse<int>>();
+        }
+
+        public async Task<bool> IsUserAuthenticated()
+        {
+            return (await _stateProvider.GetAuthenticationStateAsync()).User.Identity.IsAuthenticated;
         }
 
         public async Task<ServiceResponse<string>> Login(UsuarioLogin request)

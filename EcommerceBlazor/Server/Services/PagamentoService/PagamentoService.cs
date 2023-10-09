@@ -44,6 +44,10 @@ namespace EcommerceBlazor.Server.Services.PagamentoService
             var options = new SessionCreateOptions
             {
                 CustomerEmail = _authService.GetUsuarioEmail(),
+                ShippingAddressCollection = new SessionShippingAddressCollectionOptions
+                {
+                    AllowedCountries = new List<string> { "US", "BR" }
+                },
                 PaymentMethodTypes = new List<string>
                 {
                     "card"

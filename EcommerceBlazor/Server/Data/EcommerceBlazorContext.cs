@@ -17,6 +17,8 @@
 
             modelBuilder.Entity<Usuario>().HasKey(x => x.Usuario_ID);
 
+            modelBuilder.Entity<Endereco>().HasKey(x => x.Endereco_ID);
+
             modelBuilder.Entity<TipoProduto>().HasKey(x => x.TipoProduto_ID);
 
             modelBuilder.Entity<TipoProduto>().HasData(
@@ -273,5 +275,6 @@
         public DbSet<ItemCarrinho> ItemCarrinho { get; set; }
         public DbSet<ItemPedido> ItemPedido { get; set; }
         public DbSet<Pedido> Pedido { get; set; }
+        public DbSet<Endereco> Endereco { get; set; }
     }
 }

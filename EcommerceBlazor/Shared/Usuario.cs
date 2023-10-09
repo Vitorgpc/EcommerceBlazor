@@ -13,5 +13,6 @@ namespace EcommerceBlazor.Shared
         public byte[] SenhaHash { get; set; }
         public byte[] SenhaSalt { get; set; }
         public DateTime DataCriacao { get; set; } = DateTime.Now;
+        public Endereco Endereco { get; set; }
     }
 }

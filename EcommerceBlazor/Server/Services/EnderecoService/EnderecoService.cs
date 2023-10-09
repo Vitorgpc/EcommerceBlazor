@@ -32,6 +32,7 @@
                 dbEndereco.Cidade = endereco.Cidade;
                 dbEndereco.Cep = endereco.Cep;
                 dbEndereco.Rua = endereco.Rua;
+                response.Data = dbEndereco;
             }
 
             await _context.SaveChangesAsync();

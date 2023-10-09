@@ -1,6 +1,7 @@
 ﻿@page "/carrinho"
 @inject ICarrinhoService carrinhoService
 @inject IPedidoService pedidoService
+@inject IAuthService authService
 @inject NavigationManager navigation
 
 <PageTitle>Carrinho</PageTitle>
@@ -44,15 +45,25 @@ else
         </div>
     </div>
 
+    @if (autenticado)
+    {
+        <div>
+            <h5>Endereço de Entrega</h5>
+            <FormularioEndereco />
+        </div>
+    }
+
     <button @onclick="CriarPedido" class="btn btn-success float-end mt-1">Finalizar Pedido</button>
 }
 
 @code {
     List<CarrinhoProdutoResponse> produtosCarrinho = null;
     string mensagem = "Carregando carrinho...";
+    bool autenticado = false;
 
     protected override async Task OnInitializedAsync()
     {
+        autenticado = await authService.IsUserAuthenticated();
         await CarregarCarrinho();
     }
 

@@ -1,0 +1,83 @@
+﻿@inject IEnderecoService enderecoService
+
+@if (endereco == null)
+{
+    <span>
+        Voce não especificou um endereço de entrega ainda.
+        <button class="btn" @onclick="InicializarEndereco">Adicionar um endereço?</button>
+    </span>
+}
+else if (!enderecoEditado)
+{
+    <p>
+        <span>@endereco.PrimeiroNome @endereco.UltimoNome</span><br />
+        <span>@endereco.Rua</span><br />
+        <span>@endereco.Cidade, @endereco.Estado, @endereco.Cep</span><br />
+        <span>@endereco.Pais</span><br />
+    </p>
+    <button class="btn btn-primary" @onclick="EditarEndereco">Edit</button>
+}
+else
+{
+    <EditForm Model="endereco" OnSubmit="ConfirmarEndereco">
+
+        <div class="mb-3">
+            <label for="primeiroNome">Primeiro Nome</label>
+            <InputText id="primeiroNome" @bind-Value="endereco.PrimeiroNome" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label for="ultimoNome">Ultimo Nome</label>
+            <InputText id="ultimoNome" @bind-Value="endereco.UltimoNome" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label for="rua">Rua</label>
+            <InputText id="rua" @bind-Value="endereco.Rua" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label for="cidade">Cidade</label>
+            <InputText id="cidade" @bind-Value="endereco.Cidade" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label for="estado">Estado</label>
+            <InputText id="estado" @bind-Value="endereco.Estado" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label for="cep">CEP</label>
+            <InputText id="cep" @bind-Value="endereco.Cep" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label for="cidade">Cidade</label>
+            <InputText id="cidade" @bind-Value="endereco.Cidade" class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Salvar</button>
+
+    </EditForm>
+}
+
+@code {
+    Endereco endereco = null;
+    bool enderecoEditado = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        endereco = await enderecoService.GetEndereco();
+    }
+
+    private async Task ConfirmarEndereco()
+    {
+        enderecoEditado = false;
+        endereco = await enderecoService.AdicionarOuAtualizarEndereco(endereco);
+    }
+
+    private void InicializarEndereco()
+    {
+        endereco = new Endereco();
+        enderecoEditado = true;
+    }
+
+    private void EditarEndereco()
+    {
+        enderecoEditado = true;
+    }
+}

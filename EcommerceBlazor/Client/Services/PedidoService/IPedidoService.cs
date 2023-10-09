@@ -2,7 +2,7 @@
 {
     public interface IPedidoService
     {
-        Task CriarPedido();
+        Task<string> CriarPedido();
         Task<List<PedidoOverviewResponse>> GetPedidos();
         Task<PedidoDetalhesResponse> GetDetalhesPedido(int pedidoId);
     }

@@ -76,10 +76,15 @@ namespace EcommerceBlazor.Server.Services.CarrinhoService
             return new ServiceResponse<int> { Data = count };
         }
 
-        public async Task<ServiceResponse<List<CarrinhoProdutoResponse>>> GetProdutosCarrinhoDB()
+        public async Task<ServiceResponse<List<CarrinhoProdutoResponse>>> GetProdutosCarrinhoDB(int? usuarioId = null)
         {
+            if (usuarioId == null)
+            {
+                usuarioId = _authService.GetUsuarioId();
+            }
+
             return await GetProdutosCarrinho(await _context.ItemCarrinho
-                .Where(x => x.UsuarioId == _authService.GetUsuarioId()).ToListAsync());
+                .Where(x => x.UsuarioId == usuarioId).ToListAsync());
         }
 
         public async Task<ServiceResponse<bool>> AdicionarItemCarrinho(ItemCarrinho itemCarrinho)

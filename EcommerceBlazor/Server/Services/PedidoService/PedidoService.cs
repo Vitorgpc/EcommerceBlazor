@@ -16,9 +16,9 @@ namespace EcommerceBlazor.Server.Services.PedidoService
             _authService = authService;
         }
 
-        public async Task<ServiceResponse<bool>> CriarPedido()
+        public async Task<ServiceResponse<bool>> CriarPedido(int usuarioId)
         {
-            var produtos = (await _carrinhoService.GetProdutosCarrinhoDB()).Data;
+            var produtos = (await _carrinhoService.GetProdutosCarrinhoDB(usuarioId)).Data;
             decimal precoTotal = 0;
 
             produtos.ForEach(produto => precoTotal += produto.Preco * produto.Quantidade);
@@ -35,7 +35,7 @@ namespace EcommerceBlazor.Server.Services.PedidoService
 
             var pedido = new Pedido
             {
-                UsuarioId = _authService.GetUsuarioId(),
+                UsuarioId = usuarioId,
                 DataPedido = DateTime.Now,
                 PrecoTotal = precoTotal,
                 Itens = itensPedido
@@ -43,7 +43,7 @@ namespace EcommerceBlazor.Server.Services.PedidoService
 
             _context.Pedido.Add(pedido);
 
-            _context.ItemCarrinho.RemoveRange(_context.ItemCarrinho.Where(x => x.UsuarioId == _authService.GetUsuarioId()));
+            _context.ItemCarrinho.RemoveRange(_context.ItemCarrinho.Where(x => x.UsuarioId == usuarioId));
 
             await _context.SaveChangesAsync();
 

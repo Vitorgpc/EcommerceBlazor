@@ -14,13 +14,6 @@ namespace EcommerceBlazor.Server.Controllers
             _pedidoService = pedidoService;
         }
 
-        [HttpPost]
-        public async Task<ActionResult<ServiceResponse<bool>>> CriarPedido()
-        {
-            var resultado = await _pedidoService.CriarPedido();
-            return Ok(resultado);
-        }
-
         [HttpGet]
         public async Task<ActionResult<ServiceResponse<List<PedidoOverviewResponse>>>> GetPedidos()
         {

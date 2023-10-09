@@ -19,6 +19,8 @@ namespace EcommerceBlazor.Server.Services.AuthService
         }
 
         public int GetUsuarioId() => int.Parse(_httpContext.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+        
+        public string GetUsuarioEmail() => _httpContext.HttpContext.User.FindFirstValue(ClaimTypes.Name);
 
         public async Task<ServiceResponse<int>> Cadastro(Usuario usuario, string senha)
         {
@@ -143,6 +145,11 @@ namespace EcommerceBlazor.Server.Services.AuthService
             await _context.SaveChangesAsync();
 
             return new ServiceResponse<bool> { Data = true, Message = "Senha foi alterada com sucesso!" };
+        }
+
+        public async Task<Usuario> GetUsuarioPorEmail(string email)
+        {
+            return await _context.Usuario.FirstOrDefaultAsync(u => u.Email.Equals(email));
         }
     }
 }

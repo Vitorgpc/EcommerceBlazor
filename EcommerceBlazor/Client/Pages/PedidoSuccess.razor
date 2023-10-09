@@ -1,0 +1,15 @@
+﻿@page "/pedido-success"
+@inject ICarrinhoService carrinhoService
+
+<PageTitle>Obrigado!</PageTitle>
+
+<h3>Obrigado!</h3>
+
+<span>Obrigado pelo seu pedido! voce pode verificar seu pedido <a href="pedidos">Aqui</a>.</span>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await carrinhoService.GetQuantidadeItens();
+    }
+}

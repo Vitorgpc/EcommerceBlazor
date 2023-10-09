@@ -15,15 +15,17 @@ namespace EcommerceBlazor.Client.Services.PedidoService
             _navigationManager = navigationManager;
         }
 
-        public async Task CriarPedido()
+        public async Task<string> CriarPedido()
         {
             if (await _authService.IsUserAuthenticated())
             {
-                await _httpClient.PostAsync("api/pedido", null);
+                var resultado = await _httpClient.PostAsync("api/pagamento/checkout", null);
+                var url = await resultado.Content.ReadAsStringAsync();
+                return url;
             }
             else
             {
-                _navigationManager.NavigateTo("login");
+                return "login";
             }
         }
 

@@ -8,6 +8,7 @@ global using EcommerceBlazor.Server.Services.AuthService;
 global using EcommerceBlazor.Server.Services.PedidoService;
 global using EcommerceBlazor.Server.Services.PagamentoService;
 global using EcommerceBlazor.Server.Services.EnderecoService;
+global using EcommerceBlazor.Server.Services.TipoProdutoService;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -32,6 +33,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPedidoService, PedidoService>();
 builder.Services.AddScoped<IPagamentoService, PagamentoService>();
 builder.Services.AddScoped<IEnderecoService, EnderecoService>();
+builder.Services.AddScoped<ITipoProdutoService, TipoProdutoService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opt => {

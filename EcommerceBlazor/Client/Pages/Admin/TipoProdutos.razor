@@ -1,0 +1,78 @@
+﻿@page "/admin/tipo-produto"
+@inject ITipoProdutoService tipoProdutoService
+@implements IDisposable
+@attribute [Authorize(Roles = "Admin")]
+
+<h3>Tipos de Produto</h3>
+
+@foreach (var tipoProduto in tipoProdutoService.TipoProdutos)
+{
+    @if (tipoProduto.Editando)
+    {
+        <EditForm Model="edicaoTipoProduto" OnSubmit="AtualizarTipoProduto">
+            <div class="row">
+                <div class="col">
+                    <InputText @bind-Value="edicaoTipoProduto.Nome" class="form-control"></InputText>
+                </div>
+                <div class="col">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="oi oi-cloud-upload"></i>
+                    </button>
+                </div>
+            </div>
+        </EditForm>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col">
+                @tipoProduto.Nome
+            </div>
+            <div class="col">
+                <button class="btn btn-primary" @onclick="@(() => EditarTipoProduto(tipoProduto))">
+                    <i class="oi oi-pencil"></i>
+                </button>
+            </div>
+        </div>
+    }
+}
+
+<button class="btn btn-primary" @onclick="CriarNovoTipoProduto">
+    <i class="oi oi-plus"></i> Novo Tipo Produto
+</button>
+
+@code {
+    TipoProduto edicaoTipoProduto = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await tipoProdutoService.GetTipoProdutos();
+        tipoProdutoService.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        tipoProdutoService.OnChange -= StateHasChanged;
+    }
+
+    private void EditarTipoProduto(TipoProduto tipoProduto)
+    {
+        tipoProduto.Editando = true;
+        edicaoTipoProduto = tipoProduto;
+    }
+
+    private void CriarNovoTipoProduto()
+    {
+        edicaoTipoProduto = tipoProdutoService.CriarNovoTipoProduto();
+    }
+
+    private async Task AtualizarTipoProduto()
+    {
+        if (edicaoTipoProduto.Novo)
+            await tipoProdutoService.CriarTipoProduto(edicaoTipoProduto);
+        else
+            await tipoProdutoService.AtualizarTipoProduto(edicaoTipoProduto);
+
+        edicaoTipoProduto = new TipoProduto();
+    }
+}

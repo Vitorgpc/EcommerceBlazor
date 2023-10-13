@@ -7,6 +7,7 @@ global using EcommerceBlazor.Client.Services.AuthService;
 global using EcommerceBlazor.Client.Services.PedidoService;
 global using Microsoft.AspNetCore.Components.Authorization;
 global using EcommerceBlazor.Client.Services.EnderecoService;
+global using EcommerceBlazor.Client.Services.TipoProdutoService;
 
 using Blazored.LocalStorage;
 using EcommerceBlazor.Client;
@@ -27,6 +28,7 @@ builder.Services.AddScoped<ICarrinhoService, CarrinhoService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPedidoService, PedidoService>();
 builder.Services.AddScoped<IEnderecoService, EnderecoService>();
+builder.Services.AddScoped<ITipoProdutoService, TipoProdutoService>();
 
 builder.Services.AddOptions();
 builder.Services.AddAuthorizationCore();

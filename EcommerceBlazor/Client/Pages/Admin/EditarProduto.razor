@@ -32,8 +32,21 @@ else
             <label for="urlImagem">URL Imagem</label>
             <InputText id="urlImagem" @bind-Value="produto.UrlImagem" class="form-control"></InputText>
         </div>
-        <div class="mb-0">
+        @if (!string.IsNullOrEmpty(produto.UrlImagem))
+        {
             <img src="@produto.UrlImagem" />
+        }
+        else
+        {
+            foreach (var image in produto.Imagens)
+            {
+                <img src="@image.Data" />
+                <button type="button" @onclick="(() => RemoverImagem(image.Imagem_ID))">Remover</button>
+            }
+        }
+        <div class="mb-0">
+            <label for="imagens">Image(s)</label>
+            <InputFile id="imagens" OnChange="OnFileChange" multiple class="form-control"></InputFile>
         </div>
         <div class="mb-0">
             <label for="descricao">Descrição</label>
@@ -207,6 +220,31 @@ else
         {
             await produtoService.DeletarProduto(produto);
             navigationManager.NavigateTo("admin/produtos");
+        }
+    }
+
+    async Task OnFileChange(InputFileChangeEventArgs e)
+    {
+        var format = "image/png";
+
+        foreach (var image in e.GetMultipleFiles(int.MaxValue))
+        {
+            var resizedImage = await image.RequestImageFileAsync(format, 200, 200);
+            var buffer = new byte[resizedImage.Size];
+
+            await resizedImage.OpenReadStream().ReadAsync(buffer);
+
+            var imageData = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
+            produto.Imagens.Add(new Imagem { Data = imageData });
+        }
+    }
+
+    void RemoverImagem(int id)
+    {
+        var image = produto.Imagens.FirstOrDefault(i => i.Imagem_ID == id);
+        if (image != null)
+        {
+            produto.Imagens.Remove(image);
         }
     }
 }

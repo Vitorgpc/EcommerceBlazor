@@ -9,6 +9,8 @@
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Imagem>().HasKey(x => x.Imagem_ID);
+
             modelBuilder.Entity<Pedido>().HasKey(x => x.Pedido_ID);
 
             modelBuilder.Entity<ItemPedido>().HasKey(x => new { x.PedidoId, x.ProdutoId, x.TipoProdutoId });
@@ -276,5 +278,6 @@
         public DbSet<ItemPedido> ItemPedido { get; set; }
         public DbSet<Pedido> Pedido { get; set; }
         public DbSet<Endereco> Endereco { get; set; }
+        public DbSet<Imagem> Imagem { get; set; }
     }
 }

@@ -27,5 +27,6 @@ namespace EcommerceBlazor.Shared
         public bool Novo { get; set; } = false;
 
         public List<ProdutoVariante> Variantes { get; set; } = new List<ProdutoVariante>();
+        public List<Imagem> Imagens { get; set; } = new List<Imagem>();
     }
 }

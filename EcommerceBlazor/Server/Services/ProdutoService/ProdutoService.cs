@@ -3,10 +3,26 @@
     public class ProdutoService : IProdutoService
     {
         private readonly EcommerceBlazorContext _context;
+        private readonly IHttpContextAccessor _httpContext;
 
-        public ProdutoService(EcommerceBlazorContext context)
+        public ProdutoService(EcommerceBlazorContext context, IHttpContextAccessor httpContext)
         {
             _context = context;
+            _httpContext = httpContext;
+        }
+
+        public async Task<ServiceResponse<List<Produto>>> GetAdminProdutos()
+        {
+            var resposta = new ServiceResponse<List<Produto>>
+            {
+                Data = await _context.Produto
+                    .Where(p => !p.Deleted)
+                    .Include(x => x.Variantes.Where(v => !v.Deleted))
+                    .ThenInclude(v => v.TipoProduto)
+                    .ToListAsync()
+            };
+
+            return resposta;
         }
 
         public async Task<ServiceResponse<List<Produto>>> GetFeaturedProdutos()
@@ -14,8 +30,8 @@
             var resposta = new ServiceResponse<List<Produto>>
             {
                 Data = await _context.Produto
-                    .Where(x => x.Featured)
-                    .Include(v => v.Variantes)
+                    .Where(p => p.Featured && p.Visible && !p.Deleted)
+                    .Include(x => x.Variantes.Where(v => v.Visible && !v.Deleted))
                     .ToListAsync()
             };
 
@@ -26,10 +42,22 @@
         {
             var response = new ServiceResponse<Produto>();
 
-            var produto = await _context.Produto
-                .Include(v => v.Variantes)
-                .ThenInclude(t => t.TipoProduto)
-                .FirstOrDefaultAsync(p => p.Produto_ID == idProduto);
+            Produto produto = null;
+
+            if (_httpContext.HttpContext.User.IsInRole("Admin"))
+            {
+                produto = await _context.Produto
+                    .Include(x => x.Variantes.Where(v => !v.Deleted))
+                    .ThenInclude(t => t.TipoProduto)
+                    .FirstOrDefaultAsync(p => p.Produto_ID == idProduto && !p.Deleted);
+            }
+            else
+            {
+                produto = await _context.Produto
+                    .Include(x => x.Variantes.Where(v => v.Visible && !v.Deleted))
+                    .ThenInclude(t => t.TipoProduto)
+                    .FirstOrDefaultAsync(p => p.Produto_ID == idProduto && !p.Deleted && p.Visible);
+            }
 
             if (produto == null)
             {
@@ -48,7 +76,10 @@
         {
             var response = new ServiceResponse<List<Produto>>
             {
-                Data = await _context.Produto.Include(v => v.Variantes).ToListAsync()
+                Data = await _context.Produto
+                    .Where(p => p.Visible && !p.Deleted)
+                    .Include(x => x.Variantes.Where(v => v.Visible && !v.Deleted))
+                    .ToListAsync()
             };
 
             return response;
@@ -59,8 +90,9 @@
             var response = new ServiceResponse<List<Produto>>
             {
                 Data = await _context.Produto
-                     .Where(x => x.Categoria.Url.ToLower().Equals(urlCategoria.ToLower()))
-                     .Include(v => v.Variantes)
+                     .Where(p => p.Categoria.Url.ToLower().Equals(urlCategoria.ToLower()) &&
+                        p.Visible && !p.Deleted)
+                     .Include(x => x.Variantes.Where(v => v.Visible && !v.Deleted))
                      .ToListAsync()
             };
 
@@ -109,7 +141,8 @@
 
             var produtos = await _context.Produto.Where(x =>
                                 x.Nome.ToLower().Contains(pesquisa.ToLower()) ||
-                                x.Descricao.ToLower().Contains(pesquisa.ToLower()))
+                                x.Descricao.ToLower().Contains(pesquisa.ToLower()) && 
+                                x.Visible && !x.Deleted)
                                 .Include(v => v.Variantes)
                                 .Skip((pagina - 1) * (int)pageResult)
                                 .Take((int)pageResult)
@@ -131,7 +164,8 @@
         {
             return await _context.Produto.Where(x =>
                                 x.Nome.ToLower().Contains(pesquisa.ToLower()) ||
-                                x.Descricao.ToLower().Contains(pesquisa.ToLower()))
+                                x.Descricao.ToLower().Contains(pesquisa.ToLower()) &&
+                                x.Visible && !x.Deleted)
                                 .Include(v => v.Variantes)
                                 .ToListAsync();
         }

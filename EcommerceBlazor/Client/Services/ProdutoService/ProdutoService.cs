@@ -14,6 +14,8 @@ namespace EcommerceBlazor.Client.Services.ProdutoService
             _httpClient = http;
         }
 
+        public List<Produto> AdminProdutos { get; set; } = new List<Produto>();
+
         public List<Produto> Produtos { get; set; } = new List<Produto>();
         public string Mensagem { get; set; } = "Carregando produtos...";
         public int PaginaAtual { get; set; } = 1;
@@ -70,6 +72,18 @@ namespace EcommerceBlazor.Client.Services.ProdutoService
                 Mensagem = "Nenhum produto encontrado!";
 
             OnProdutoChanged?.Invoke();
+        }
+
+        public async Task GetAdminProdutos()
+        {
+            var resultado = await _httpClient.GetFromJsonAsync<ServiceResponse<List<Produto>>>("api/produto/admin");
+            
+            AdminProdutos = resultado.Data;
+            PaginaAtual = 1;
+            PaginaCount = 0;
+
+            if (AdminProdutos.Count == 0)
+                Mensagem = "Nenhum produto cadastrado!";
         }
     }
 }

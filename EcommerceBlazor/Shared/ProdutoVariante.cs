@@ -19,5 +19,12 @@ namespace EcommerceBlazor.Shared
         public decimal Preco { get; set; }
         [Column(TypeName = "decimal(18,2)")]
         public decimal PrecoOriginal { get; set; }
+        public bool Visible { get; set; } = true;
+        public bool Deleted { get; set; } = false;
+
+        [NotMapped]
+        public bool Editando { get; set; } = false;
+        [NotMapped]
+        public bool Novo { get; set; } = false;
     }
 }

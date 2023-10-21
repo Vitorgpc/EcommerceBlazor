@@ -4,6 +4,7 @@
     {
         event Action OnProdutoChanged;
         List<Produto> Produtos { get; set; }
+        List<Produto> AdminProdutos { get; set; }
         string Mensagem { get; set; }
         int PaginaAtual { get; set; }
         int PaginaCount { get; set; }
@@ -12,5 +13,6 @@
         Task<ServiceResponse<Produto>> GetProduto(int idProduto);
         Task PesquisarProdutos(string pesquisa, int pagina);
         Task<List<string>> GetSugestaoProdutos(string pesquisa);
+        Task GetAdminProdutos();
     }
 }

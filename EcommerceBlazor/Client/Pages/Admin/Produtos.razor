@@ -1,0 +1,78 @@
+﻿@page "/admin/produtos"
+@inject IProdutoService produtoService
+@inject NavigationManager navigationManager
+@attribute [Authorize(Roles = "Admin")]
+
+<h3>Produtos</h3>
+
+@if (produtoService.AdminProdutos == null)
+{
+    <span>Carregando Produtos...</span>
+}
+else
+{
+    <button class="btn btn-primary float-end" @onclick="CriarProduto">
+        <i class="oi oi-plus"></i> Novo Produto
+    </button>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Produto</th>
+                <th>Variante</th>
+                <th>Preço</th>
+                <th>Visivel</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <Virtualize Items="produtoService.AdminProdutos" Context="produto">
+                <tr>
+                    <td>
+                        <img src="@produto.UrlImagem" />
+                    </td>
+                    <td>@produto.Nome</td>
+                    <td>
+                        @foreach (var variant in produto.Variantes)
+                        {
+                            <span>@variant.TipoProduto.Nome</span>
+                            <br />
+                        }
+                    </td>
+                    <td>
+                        @foreach (var variant in produto.Variantes)
+                        {
+                            <span>@variant.Preco</span>
+
+                            <br />
+                        }
+                    </td>
+                    <td>@(produto.Visible ? "✔️" : "")</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="(() => EditarProduto(produto.Produto_ID))">
+                            <i class="oi oi-pencil"></i>
+                        </button>
+                    </td>
+                </tr>
+            </Virtualize>
+        </tbody>
+    </table>
+}
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await produtoService.GetAdminProdutos();
+    }
+
+    void EditarProduto(int produtoId)
+    {
+        navigationManager.NavigateTo($"admin/produto/{produtoId}");
+    }
+
+    void CriarProduto()
+    {
+        navigationManager.NavigateTo("admin/produto");
+    }
+}

@@ -1,4 +1,5 @@
 ﻿using Azure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,6 +14,13 @@ namespace EcommerceBlazor.Server.Controllers
         public ProdutoController(IProdutoService produtoService) 
         {
             _produtoService = produtoService;
+        }
+
+        [HttpGet("admin"), Authorize(Roles = "Admin")]
+        public async Task<ActionResult<ServiceResponse<List<Produto>>>> GetAdminProdutos()
+        {
+            var response = await _produtoService.GetAdminProdutos();
+            return Ok(response);
         }
 
         [HttpGet]

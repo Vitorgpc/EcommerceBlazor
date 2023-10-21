@@ -14,5 +14,8 @@
         Task PesquisarProdutos(string pesquisa, int pagina);
         Task<List<string>> GetSugestaoProdutos(string pesquisa);
         Task GetAdminProdutos();
+        Task<Produto> CriarProduto(Produto produto);
+        Task<Produto> AtualizarProduto(Produto produto);
+        Task DeletarProduto(Produto produto);
     }
 }

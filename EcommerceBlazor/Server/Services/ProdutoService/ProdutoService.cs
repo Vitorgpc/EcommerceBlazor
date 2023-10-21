@@ -11,6 +11,85 @@
             _httpContext = httpContext;
         }
 
+        public async Task<ServiceResponse<Produto>> AtualizarProduto(Produto produto)
+        {
+            var dbProduto = await _context.Produto.FindAsync(produto.Produto_ID);
+
+            if (dbProduto == null)
+            {
+                return new ServiceResponse<Produto>
+                {
+                    Success = false,
+                    Message = "Produto não existe!"
+                };
+            }
+
+            dbProduto.Nome = produto.Nome;
+            dbProduto.Descricao = produto.Descricao;
+            dbProduto.UrlImagem = produto.UrlImagem;
+            dbProduto.CategoriaId = produto.CategoriaId;
+            dbProduto.Visible = produto.Visible;
+            dbProduto.Featured = produto.Featured;
+
+            foreach (var variante in produto.Variantes)
+            {
+                var dbVariante = await _context.ProdutoVariante.SingleOrDefaultAsync(v => 
+                    v.ProdutoId == variante.ProdutoId &&
+                    v.TipoProdutoId == variante.TipoProdutoId);
+
+                if (dbVariante == null)
+                {
+                    variante.TipoProduto = null;
+                    _context.ProdutoVariante.Add(variante);
+                }
+                else
+                {
+                    dbVariante.TipoProduto = variante.TipoProduto;
+                    dbVariante.Preco = variante.Preco;
+                    dbVariante.PrecoOriginal = variante.PrecoOriginal;
+                    dbVariante.Visible = variante.Visible;
+                    dbVariante.Deleted = variante.Deleted;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return new ServiceResponse<Produto> { Data = produto };
+        }
+
+        public async Task<ServiceResponse<Produto>> CriarProduto(Produto produto)
+        {
+            foreach (var variante in produto.Variantes)
+            {
+                variante.TipoProduto = null;
+            }
+
+            _context.Produto.Add(produto);
+            await _context.SaveChangesAsync();
+
+            return new ServiceResponse<Produto> { Data = produto };
+        }
+
+        public async Task<ServiceResponse<bool>> DeletarProduto(int produtoId)
+        {
+            var dbProduto = await _context.Produto.FindAsync(produtoId);
+
+            if (dbProduto == null)
+            {
+                return new ServiceResponse<bool>
+                {
+                    Success = false,
+                    Data = false,
+                    Message = "Produto não existe!"
+                };
+            }
+
+            dbProduto.Deleted = true;
+            await _context.SaveChangesAsync();
+
+            return new ServiceResponse<bool> { Data = true };
+        }
+
         public async Task<ServiceResponse<List<Produto>>> GetAdminProdutos()
         {
             var resposta = new ServiceResponse<List<Produto>>

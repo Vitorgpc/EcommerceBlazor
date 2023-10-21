@@ -23,6 +23,27 @@ namespace EcommerceBlazor.Server.Controllers
             return Ok(response);
         }
 
+        [HttpPost, Authorize(Roles = "Admin")]
+        public async Task<ActionResult<ServiceResponse<Produto>>> CriarProduto(Produto produto)
+        {
+            var response = await _produtoService.CriarProduto(produto);
+            return Ok(response);
+        }
+
+        [HttpPut, Authorize(Roles = "Admin")]
+        public async Task<ActionResult<ServiceResponse<Produto>>> AtualizarProduto(Produto produto)
+        {
+            var response = await _produtoService.AtualizarProduto(produto);
+            return Ok(response);
+        }
+
+        [HttpDelete("{produtoId}"), Authorize(Roles = "Admin")]
+        public async Task<ActionResult<ServiceResponse<bool>>> DeletarProduto(int produtoId)
+        {
+            var response = await _produtoService.DeletarProduto(produtoId);
+            return Ok(response);
+        }
+
         [HttpGet]
         public async Task<ActionResult<ServiceResponse<List<Produto>>>> GetProdutos()
         {

@@ -85,5 +85,22 @@ namespace EcommerceBlazor.Client.Services.ProdutoService
             if (AdminProdutos.Count == 0)
                 Mensagem = "Nenhum produto cadastrado!";
         }
+
+        public async Task<Produto> CriarProduto(Produto produto)
+        {
+            var resultado = await _httpClient.PostAsJsonAsync("api/produto", produto);
+            return (await resultado.Content.ReadFromJsonAsync<ServiceResponse<Produto>>()).Data;
+        }
+
+        public async Task<Produto> AtualizarProduto(Produto produto)
+        {
+            var resultado = await _httpClient.PutAsJsonAsync("api/produto", produto);
+            return (await resultado.Content.ReadFromJsonAsync<ServiceResponse<Produto>>()).Data;
+        }
+
+        public async Task DeletarProduto(Produto produto)
+        {
+            await _httpClient.DeleteAsync($"api/produto/{produto.Produto_ID}");
+        }
     }
 }
